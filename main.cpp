@@ -57,6 +57,10 @@ struct vector
         size++;
     }
 
+    void pop_back() {
+        size--;
+    }
+
     T* begin() const {
         return data;
     }
@@ -104,10 +108,82 @@ struct Node {
     int pos_x;
     int pos_y;
 
+    int cost;
+
+    Node* from;
+    
+    bool traveled;
+
 };
 
-struct Data {
+struct HeapNode {
+    Node* node;
+    int cost;
+};
 
+struct Heap {
+
+    void swap_h_nodes(HeapNode& h1, HeapNode& h2) {
+        HeapNode tmp;
+        tmp.node = h1.node;
+        tmp.cost = h1.cost;
+
+        h1.node = h2.node;
+        h1.cost = h2.cost;
+
+        h2.node = tmp.node;
+        h2.cost = tmp.cost;
+
+    }
+
+    void heapify(int i, int n) {
+
+        int largest = i;
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+
+        if (left < n && nodes.data[left].cost > nodes.data[largest].cost) {
+            largest = left;
+        }          
+
+        if (right < n && nodes.data[right].cost > nodes.data[largest].cost) {
+            largest = right;
+        }
+
+        if (largest != i) {
+            swap_h_nodes(nodes.data[i], nodes.data[largest]);
+            heapify(n, largest);
+        }
+    }
+
+    void bubble_last_up(int i, int n) {
+        
+        int last = i;
+        int parent = n - 1 - (i / 2);
+
+        if (nodes.data[last].cost > nodes.data[parent].cost) {
+            swap_h_nodes(nodes.data[last], nodes.data[parent]);
+            bubble_last_up(parent, n);
+        }
+
+    }
+
+    void push(Node* n) {
+        struct HeapNode h_node;
+        h_node.node = n;
+        h_node.cost = n->cost;
+        nodes.push_back(h_node);
+        bubble_last_up(nodes.size - 1, nodes.size - 1);
+    }
+
+    Node* pop() {
+        nodes.pop_back();
+        swap_h_nodes(nodes.data[0], nodes.data[nodes.size - 1]);
+        heapify(0, nodes.size - 1);
+        return nodes.data[nodes.size].node;
+    }
+
+    vector<HeapNode> nodes;
 
 };
 
@@ -350,8 +426,23 @@ void parse_input(vector<Node>& nodes, vector<City>& cities) {
 
     char* m = parse_cities(cities, map_size_x, map_size_y);
     create_nodes(m, map_size_x, nodes, cities);
+
 }
 
+void parse_queries() {
+    int num;
+    scanf("%d\n", &num);
+    for (int i = 0; i < num; i++) {
+
+        char from_city[100];
+        char to_city[100];
+        int cost;
+
+        char line[1024];
+        fgets(line, 1024, stdin);
+        sscanf(line, "%s %s %d", from_city, to_city, &cost);
+    }
+}
 
 int main() {
   
@@ -359,5 +450,9 @@ int main() {
     vector<City> cities;
 
     parse_input(nodes, cities);
-    
+    parse_queries();
+
+    for (auto& c : cities) {
+        puts(c.name);
+    }
 }
