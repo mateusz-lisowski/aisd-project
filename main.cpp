@@ -106,6 +106,52 @@ struct Node {
 
 };
 
+void swap(char** s1, char** s2) {
+    char* t = *s1;
+    *s1 = *s2;
+    *s2 = t;
+}
+
+int partition(char* arr[], int low, int high) {
+
+    char* pivot = arr[high];
+    int i = (low - 1);
+
+    for (int j = low; j <= high - 1; j++) {
+        if (strcmp(arr[j], pivot) < 0) {
+            i++;
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    swap(&arr[i + 1], &arr[high]);
+    return (i + 1);
+}
+
+void quick_sort(char* arr[], int low, int high) {
+    if (low < high) {
+        int p = partition(arr, low, high);
+        quick_sort(arr, low, p - 1);
+        quick_sort(arr, p + 1, high);
+    }
+}
+
+int binary_search(int arr[], int l, int r, int x)
+{
+    while (l <= r) {
+        int m = l + (r - l) / 2;
+
+        if (arr[m] == x)
+            return m;
+
+        if (arr[m] < x)
+            l = m + 1;
+        else
+            r = m - 1;
+    }
+
+    return -1;
+}
+
 
 void read_city_name_right(char* map, int pos, char* city_name) {
     int i = 0;
@@ -257,13 +303,17 @@ void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& 
     }
 
     // Interlink cities to their nodes
-    for (auto& n : nodes) {
-        for (auto& c : cities) {
+    for (auto& c : cities) {
+        for (auto& n : nodes) {
             if (n.pos_x == c.pos_x && n.pos_y == c.pos_y) {
                 c.node = &n;
+                break;
             }
         }
     }
+
+    // Sort array of nodes
+
 
     // Parse airports
     int aiports_num;
@@ -278,15 +328,17 @@ void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& 
         fgets(line, 1024, stdin);
         sscanf(line, "%s %s %d", from_city, to_city, &cost);
 
-        for (auto& c1 : cities) {
+        /*for (auto& c1 : cities) {
             if (strcmp(c1.name, from_city) == 0) {
                 for (auto& c2 : cities) {
                     if (strcmp(c2.name, to_city) == 0) {
                         c1.node->neighbours.push_back({ c2.node, cost });
+                        break;
                     }
                 }
             }
-        }
+        }*/
+
     }
 }
 
@@ -304,11 +356,36 @@ void parse_input(vector<Node>& nodes, vector<City>& cities) {
     //}
 }
 
+
 int main() {
   
     vector<Node> nodes;
     vector<City> cities;
 
-    parse_input(nodes, cities);
+    //parse_input(nodes, cities);
+    
+    /*char* l[5] = { "Xdland", "Aland", "Cland", "Bland", "Baland" };*/
+    vector<char*> l;
+    l.push_back((char*)"Xdland");
+    l.push_back((char*)"Aland");
+    l.push_back((char*)"Cland");
+    l.push_back((char*)"Bland");
+    l.push_back((char*)"Baland");
+    
+    //for (int i = 0; i < 5; i++) {
+    //    for (int j = 0; j < 5; j++) {
+    //        if (strcmp(l[i], l[j]) < 0) {
+    //            const char* tmp = l[i];
+    //            l[i] = l[j];
+    //            l[j] = tmp;
+    //        }
 
+    //    }
+    //}
+
+    quick_sort(l.data, 0, l.size - 1);
+
+    for (auto& s : l) {
+        puts(s);
+    }
 }
