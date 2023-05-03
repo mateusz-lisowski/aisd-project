@@ -158,14 +158,18 @@ struct Heap {
         }
     }
 
-    void bubble_last_up(int i, int n) {
+    void bubble_last_up(int i) {
         
         int last = i;
-        int parent = n - 1 - (i / 2);
+        int parent = i / 2;
+
+        if (i == 0) {
+            return;
+        }
 
         if (nodes.data[last].cost > nodes.data[parent].cost) {
             swap_h_nodes(nodes.data[last], nodes.data[parent]);
-            bubble_last_up(parent, n);
+            bubble_last_up(parent);
         }
 
     }
@@ -175,7 +179,7 @@ struct Heap {
         h_node.node = n;
         h_node.cost = n->cost;
         nodes.push_back(h_node);
-        bubble_last_up(nodes.size - 1, nodes.size - 1);
+        bubble_last_up(nodes.size - 1);
     }
 
     Node* pop() {
