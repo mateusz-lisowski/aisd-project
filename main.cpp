@@ -198,6 +198,16 @@ void swap(City& c1, City& c2) {
     memcpy(tmp, c1.name, 100);
     memcpy(c1.name, c2.name, 100);
     memcpy(c2.name, tmp, 100);
+
+    int tmp_x = c1.pos_x;
+    int tmp_y = c1.pos_x;
+    
+    c1.pos_x = c2.pos_x;
+    c1.pos_y = c2.pos_y;
+
+    c2.pos_x = tmp_x;
+    c2.pos_y = tmp_y;
+
 }
 
 int partition(City* arr, int low, int high) {
@@ -270,7 +280,13 @@ void read_city_name_left(char* map, int pos, char* city_name) {
 
 void read_city_name(char* map, int pos, int map_width, char* city_name) {
 
-    if (isalpha(map[pos - map_width]) && isalpha(map[pos - map_width - 1])) {
+    if (isalpha(map[pos - map_width]) && pos - map_width <= 0) {
+        // Nazwa jest jednoliterowa
+        city_name[0] = map[pos - map_width];
+        city_name[1] = '\0';
+    }
+
+    else if (isalpha(map[pos - map_width]) && isalpha(map[pos - map_width - 1])) {
         // zacznij wczytywaæ od pozycji: pos - map_width -> na lewo
         read_city_name_left(map, pos - map_width, city_name);
     }
@@ -293,6 +309,12 @@ void read_city_name(char* map, int pos, int map_width, char* city_name) {
     else if (isalpha(map[pos + map_width - 1])) {
         // zacznij wczytywaæ od pozycji: pos + map_width - 1 -> na lewo
         read_city_name_left(map, pos + map_width - 1, city_name);
+    }
+
+    else if (isalpha(map[pos - map_width]) && pos - map_width + 1 >= sizeof(map) / sizeof(char)) {
+        // Nazwa jest jednoliterowa
+        city_name[0] = map[pos - map_width];
+        city_name[1] = '\0';
     }
 
     else if (isalpha(map[pos - map_width]) && isalpha(map[pos - map_width + 1])) {
@@ -390,6 +412,9 @@ void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& 
         }
     }
 
+    // Sort array of cities
+    quick_sort(cities.data, 0, cities.size);
+
     // Interlink cities to their nodes
     for (auto& c : cities) {
         for (auto& n : nodes) {
@@ -400,9 +425,6 @@ void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& 
             }
         }
     }
-
-    // Sort array of cities
-    quick_sort(cities.data, 0, cities.size);
 
     // Parse airports
     int aiports_num;
@@ -459,8 +481,7 @@ void parse_queries(vector<Node>& nodes, vector<City>& cities) {
         int to_city_index = binary_search(cities.data, 0, cities.size - 1, from_city);
 
         Heap heap;
-        HeapNode node;
-        node.cost = 0;
+        cities.data[from_city_index].node->cost = 0;
         heap.push(cities.data[from_city_index].node);
 
         while (heap.nodes.size != 0) {
@@ -481,12 +502,12 @@ void parse_queries(vector<Node>& nodes, vector<City>& cities) {
         }
 
         if (type == 0) {
-            printf("%d\n", node.cost);
+            printf("%d\n", n->cost);
         }
 
         if (type == 1) {
 
-            printf("%d", node.cost);
+            printf("%d", n->cost);      
             Node* n = cities.data[from_city_index].node->from;
             Node* dst = cities.data[to_city_index].node;
             while (n != dst) {
@@ -508,5 +529,9 @@ int main() {
 
     parse_input(nodes, cities);
     parse_queries(nodes, cities);
+
+    for (auto& c : cities) {
+        printf("City{%s, %d, %d}", c.name, c.pos_x, c.pos_y);
+    }
 
 }
