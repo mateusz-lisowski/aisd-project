@@ -256,7 +256,7 @@ void read_city_name_right(char* map, int x, int y, int mx, char* city_name) {
     int pos = y * mx + x;
 
     int i = 0;
-    while (isalpha(map[pos])) {
+    while (map[pos] != NULL && map[pos] != '*' && map[pos] != '#' && map[pos] != '.') {
         city_name[i] = map[pos];
         map[pos] = '.';
         i++;
@@ -270,7 +270,7 @@ void read_city_name_left(char* map, int x, int y, int mx, char* city_name) {
     int pos = y * mx + x;
 
     int i = 0;
-    while (isalpha(map[pos])) {
+    while (map[pos] != NULL && map[pos] != '*' && map[pos] != '#' && map[pos] != '.') {
         city_name[i] = map[pos];
         map[pos] = '.';
         i++;
