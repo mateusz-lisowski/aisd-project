@@ -501,14 +501,15 @@ void parse_queries(vector<Node>& nodes, vector<City>& cities) {
             }
         }
 
+        Node* n = cities.data[from_city_index].node->from;
+        
         if (type == 0) {
             printf("%d\n", n->cost);
         }
 
         if (type == 1) {
 
-            printf("%d", n->cost);      
-            Node* n = cities.data[from_city_index].node->from;
+            printf("%d", n->cost);
             Node* dst = cities.data[to_city_index].node;
             while (n != dst) {
                 if (n->city != nullptr) {
