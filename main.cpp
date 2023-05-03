@@ -106,28 +106,34 @@ struct Node {
 
 };
 
-void swap(char** s1, char** s2) {
-    char* t = *s1;
-    *s1 = *s2;
-    *s2 = t;
+struct Data {
+
+
+};
+
+void swap(City& c1, City& c2) {
+    char tmp[100];
+    memcpy(tmp, c1.name, 100);
+    memcpy(c1.name, c2.name, 100);
+    memcpy(c2.name, tmp, 100);
 }
 
-int partition(char* arr[], int low, int high) {
+int partition(City* arr, int low, int high) {
 
-    char* pivot = arr[high];
+    char* pivot = arr[high].name;
     int i = (low - 1);
 
     for (int j = low; j <= high - 1; j++) {
-        if (strcmp(arr[j], pivot) < 0) {
+        if (strcmp(arr[j].name, pivot) < 0) {
             i++;
-            swap(&arr[i], &arr[j]);
+            swap(arr[i], arr[j]);
         }
     }
-    swap(&arr[i + 1], &arr[high]);
+    swap(arr[i + 1], arr[high]);
     return (i + 1);
 }
 
-void quick_sort(char* arr[], int low, int high) {
+void quick_sort(City* arr, int low, int high) {
     if (low < high) {
         int p = partition(arr, low, high);
         quick_sort(arr, low, p - 1);
@@ -135,15 +141,15 @@ void quick_sort(char* arr[], int low, int high) {
     }
 }
 
-int binary_search(int arr[], int l, int r, int x)
+int binary_search(City* arr, int l, int r, char* x)
 {
     while (l <= r) {
         int m = l + (r - l) / 2;
 
-        if (arr[m] == x)
+        if (strcmp(arr[m].name, x) == 0)
             return m;
 
-        if (arr[m] < x)
+        if (strcmp(arr[m].name, x) < 0)
             l = m + 1;
         else
             r = m - 1;
@@ -312,8 +318,8 @@ void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& 
         }
     }
 
-    // Sort array of nodes
-
+    // Sort array of cities
+    quick_sort(cities.data, 0, cities.size);
 
     // Parse airports
     int aiports_num;
@@ -328,16 +334,10 @@ void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& 
         fgets(line, 1024, stdin);
         sscanf(line, "%s %s %d", from_city, to_city, &cost);
 
-        /*for (auto& c1 : cities) {
-            if (strcmp(c1.name, from_city) == 0) {
-                for (auto& c2 : cities) {
-                    if (strcmp(c2.name, to_city) == 0) {
-                        c1.node->neighbours.push_back({ c2.node, cost });
-                        break;
-                    }
-                }
-            }
-        }*/
+        int from_city_index = binary_search(cities.data, 0, cities.size - 1, from_city);
+        int to_city_index = binary_search(cities.data, 0, cities.size - 1, to_city);
+
+        cities.data[from_city_index].node = cities.data[to_city_index].node;
 
     }
 }
@@ -350,10 +350,6 @@ void parse_input(vector<Node>& nodes, vector<City>& cities) {
 
     char* m = parse_cities(cities, map_size_x, map_size_y);
     create_nodes(m, map_size_x, nodes, cities);
-
-    //for (auto& c : cities) {
-    //    std::cout << "City{" << c.name << ", " << c.pos_x << " ," << c.pos_y << "}" << '\n';
-    //}
 }
 
 
@@ -362,30 +358,6 @@ int main() {
     vector<Node> nodes;
     vector<City> cities;
 
-    //parse_input(nodes, cities);
+    parse_input(nodes, cities);
     
-    /*char* l[5] = { "Xdland", "Aland", "Cland", "Bland", "Baland" };*/
-    vector<char*> l;
-    l.push_back((char*)"Xdland");
-    l.push_back((char*)"Aland");
-    l.push_back((char*)"Cland");
-    l.push_back((char*)"Bland");
-    l.push_back((char*)"Baland");
-    
-    //for (int i = 0; i < 5; i++) {
-    //    for (int j = 0; j < 5; j++) {
-    //        if (strcmp(l[i], l[j]) < 0) {
-    //            const char* tmp = l[i];
-    //            l[i] = l[j];
-    //            l[j] = tmp;
-    //        }
-
-    //    }
-    //}
-
-    quick_sort(l.data, 0, l.size - 1);
-
-    for (auto& s : l) {
-        puts(s);
-    }
 }
