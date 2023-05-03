@@ -112,7 +112,9 @@ struct Node {
 
     Node* from;
     
-    bool traveled;
+    City* city = nullptr;
+
+    bool traversed;
 
 };
 
@@ -389,6 +391,7 @@ void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& 
         for (auto& n : nodes) {
             if (n.pos_x == c.pos_x && n.pos_y == c.pos_y) {
                 c.node = &n;
+                n.city = &c;
                 break;
             }
         }
@@ -413,7 +416,7 @@ void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& 
         int from_city_index = binary_search(cities.data, 0, cities.size - 1, from_city);
         int to_city_index = binary_search(cities.data, 0, cities.size - 1, to_city);
 
-        cities.data[from_city_index].node = cities.data[to_city_index].node;
+        cities.data[from_city_index].node->neighbours.push_back({ cities.data[to_city_index].node, cost });
 
     }
 }
@@ -429,18 +432,62 @@ void parse_input(vector<Node>& nodes, vector<City>& cities) {
 
 }
 
-void parse_queries() {
+void parse_queries(vector<Node>& nodes, vector<City>& cities) {
     int num;
     scanf("%d\n", &num);
     for (int i = 0; i < num; i++) {
 
         char from_city[100];
         char to_city[100];
-        int cost;
+        int type;
 
         char line[1024];
         fgets(line, 1024, stdin);
-        sscanf(line, "%s %s %d", from_city, to_city, &cost);
+        sscanf(line, "%s %s %d", from_city, to_city, &type);
+
+        int from_city_index = binary_search(cities.data, 0, cities.size - 1, from_city);
+        int to_city_index = binary_search(cities.data, 0, cities.size - 1, to_city);
+
+        Heap heap;
+        HeapNode node;
+        node.cost = 0;
+        heap.push(cities.data[from_city_index].node);
+
+        while (heap.nodes.size != 0) {
+            Node* node = heap.pop();
+            if (!node->traversed) {
+                node->traversed = true;
+                if (node == cities.data[to_city_index].node)
+                    return;
+                for (auto& edge : node->neighbours) {
+                    node->cost = 0x7FFFFFFF;
+                    node->from = nullptr;
+                    node->traversed = false;
+                    int new_cost = node->cost + edge.cost;
+                    if (new_cost < edge.node->cost) {
+                        edge.node->cost = new_cost;
+                        edge.node->from = node;
+                    }
+                    heap.push(edge.node);
+                }
+            }
+        }
+
+        if (type == 0) {
+            printf("%d", node.cost);
+        }
+
+        if (type == 1) {
+            printf("%d", node.cost);
+            Node* n = cities.data[to_city_index].node->from;
+            while (n != nullptr)
+            {
+                if (n->city != nullptr) {
+                    printf(" %s", n->city->name);
+                }
+            }
+        }
+
     }
 }
 
@@ -450,7 +497,7 @@ int main() {
     vector<City> cities;
 
     parse_input(nodes, cities);
-    parse_queries();
+    parse_queries(nodes, cities);
 
     for (auto& c : cities) {
         puts(c.name);
