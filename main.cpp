@@ -8,10 +8,12 @@ template<typename T>
 struct vector
 {
     vector()
-        :data(nullptr), size(0), cap(0) {
+        :data(nullptr), size(0), cap(0)
+    {
     }
 
-    ~vector() {
+    ~vector()
+    {
         if (data != nullptr)
             delete[] data;
     }
@@ -20,7 +22,8 @@ struct vector
 
     vector& operator=(const vector& o) = delete;
 
-    vector(vector&& o) {
+    vector(vector&& o)
+    {
         data = o.data;
         size = o.size;
         cap = o.cap;
@@ -29,7 +32,8 @@ struct vector
         o.cap = 0;
     }
 
-    vector& operator=(vector&& o) {
+    vector& operator=(vector&& o)
+    {
         data = o.data;
         size = o.size;
         cap = o.cap;
@@ -39,11 +43,13 @@ struct vector
         return *this;
     }
 
-    void push_back(const T& t) {
+    void push_back(const T& t)
+    {
         push_back(std::move(T(t)));
     }
 
-    void push_back(T&& t) {
+    void push_back(T&& t)
+    {
         if (size + 1 > cap) {
             cap = (cap + 1) * 2;
             T* new_data = new T[cap];
@@ -57,23 +63,28 @@ struct vector
         size++;
     }
 
-    void pop_back() {
+    void pop_back()
+    {
         size--;
     }
 
-    T* begin() const {
+    T* begin() const
+    {
         return data;
     }
 
-    T* end() const {
+    T* end() const
+    {
         return data + size;
     }
 
-    size_t get_size() const {
+    size_t get_size() const
+    {
         return size;
     }
 
-    T& at(size_t i) const {
+    T& at(size_t i) const
+    {
         return data[i];
     }
 
@@ -84,7 +95,8 @@ struct vector
 
 struct Node;
 
-struct City {
+struct City
+{
 
     char name[100];
 
@@ -94,14 +106,16 @@ struct City {
     Node* node;
 };
 
-struct Edge {
+struct Edge
+{
 
     Node* node;
     int cost;
 
 };
 
-struct Node {
+struct Node
+{
 
     vector<Edge> neighbours;
 
@@ -111,21 +125,24 @@ struct Node {
     int cost;
 
     Node* from;
-    
+
     City* city = nullptr;
 
     bool traversed;
 
 };
 
-struct HeapNode {
+struct HeapNode
+{
     Node* node;
     int cost;
 };
 
-struct Heap {
+struct Heap
+{
 
-    void swap_h_nodes(HeapNode& h1, HeapNode& h2) {
+    void swap_h_nodes(HeapNode& h1, HeapNode& h2)
+    {
         HeapNode tmp;
         tmp.node = h1.node;
         tmp.cost = h1.cost;
@@ -138,7 +155,8 @@ struct Heap {
 
     }
 
-    void heapify(int i, int n) {
+    void heapify(int i, int n)
+    {
 
         int largest = i;
         int left = 2 * i + 1;
@@ -146,7 +164,7 @@ struct Heap {
 
         if (left < n && nodes.data[left].cost < nodes.data[largest].cost) {
             largest = left;
-        }          
+        }
 
         if (right < n && nodes.data[right].cost < nodes.data[largest].cost) {
             largest = right;
@@ -158,8 +176,9 @@ struct Heap {
         }
     }
 
-    void bubble_last_up(int i) {
-        
+    void bubble_last_up(int i)
+    {
+
         int last = i;
         int parent = (i - 1) / 2;
 
@@ -174,7 +193,8 @@ struct Heap {
 
     }
 
-    void push(Node* n) {
+    void push(Node* n)
+    {
         struct HeapNode h_node;
         h_node.node = n;
         h_node.cost = n->cost;
@@ -182,7 +202,8 @@ struct Heap {
         bubble_last_up(nodes.size - 1);
     }
 
-    Node* pop() {
+    Node* pop()
+    {
         swap_h_nodes(nodes.data[0], nodes.data[nodes.size - 1]);
         heapify(0, nodes.size - 1);
         nodes.pop_back();
@@ -193,7 +214,8 @@ struct Heap {
 
 };
 
-void swap(City& c1, City& c2) {
+void swap(City& c1, City& c2)
+{
     char tmp[100];
     memcpy(tmp, c1.name, 100);
     memcpy(c1.name, c2.name, 100);
@@ -201,7 +223,7 @@ void swap(City& c1, City& c2) {
 
     int tmp_x = c1.pos_x;
     int tmp_y = c1.pos_y;
-    
+
     c1.pos_x = c2.pos_x;
     c1.pos_y = c2.pos_y;
 
@@ -210,7 +232,8 @@ void swap(City& c1, City& c2) {
 
 }
 
-int partition(City* arr, int low, int high) {
+int partition(City* arr, int low, int high)
+{
 
     char* pivot = arr[high].name;
     int i = (low - 1);
@@ -225,7 +248,8 @@ int partition(City* arr, int low, int high) {
     return (i + 1);
 }
 
-void quick_sort(City* arr, int low, int high) {
+void quick_sort(City* arr, int low, int high)
+{
     if (low < high) {
         int p = partition(arr, low, high);
         quick_sort(arr, low, p - 1);
@@ -251,7 +275,8 @@ int binary_search(City* arr, int l, int r, char* x)
 }
 
 
-void read_city_name_right(char* map, int x, int y, int mx, char* city_name) {
+void read_city_name_right(char* map, int x, int y, int mx, char* city_name)
+{
 
     int pos = y * mx + x;
 
@@ -265,8 +290,9 @@ void read_city_name_right(char* map, int x, int y, int mx, char* city_name) {
     city_name[i] = '\0';
 }
 
-void read_city_name_left(char* map, int x, int y, int mx, char* city_name) {
-    
+void read_city_name_left(char* map, int x, int y, int mx, char* city_name)
+{
+
     int pos = y * mx + x;
 
     int i = 0;
@@ -284,8 +310,9 @@ void read_city_name_left(char* map, int x, int y, int mx, char* city_name) {
     city_name[i] = '\0';
 }
 
-bool is_alpha_on_x_y(char* map, int x, int y, int mx, int my) {
-    
+bool is_alpha_on_x_y(char* map, int x, int y, int mx, int my)
+{
+
     if (x == -1 || y == -1 || x == mx || y == my) {
         return false;
     }
@@ -300,20 +327,38 @@ bool is_alpha_on_x_y(char* map, int x, int y, int mx, int my) {
 
 }
 
-void read_city_name(char* map, int x, int y, int map_width, int map_height, char* city_name) {
+bool is_road_on_x_y(char* map, int x, int y, int mx, int my)
+{
+
+    if (x == -1 || y == -1 || x == mx || y == my) {
+        return false;
+    }
+
+    int pos = y * mx + x;
+
+    if (map[pos] == '#' || map[pos] == '*') {
+        return true;
+    }
+
+    return false;
+
+}
+
+void read_city_name(char* map, int x, int y, int map_width, int map_height, char* city_name)
+{
 
     if (is_alpha_on_x_y(map, x - 1, y, map_width, map_height)) {
         read_city_name_left(map, x - 1, y, map_width, city_name);
         return;
     }
-    
+
     if (is_alpha_on_x_y(map, x + 1, y, map_width, map_height)) {
         read_city_name_right(map, x + 1, y, map_width, city_name);
         return;
     }
 
     if (is_alpha_on_x_y(map, x, y - 1, map_width, map_height)) {
-        
+
         if (!is_alpha_on_x_y(map, x - 1, y - 1, map_width, map_height)) {
             read_city_name_right(map, x, y - 1, map_width, city_name);
             return;
@@ -371,18 +416,17 @@ void read_city_name(char* map, int x, int y, int map_width, int map_height, char
     }
 }
 
-char* parse_cities(vector<City>& cities, int map_size_x, int map_size_y) {
-    
+char* parse_cities(vector<City>& cities, int map_size_x, int map_size_y)
+{
+
     size_t size = map_size_x * map_size_y;
 
     char* map = new char[size + 1];
 
     for (int i = 0; i < map_size_y; i++) {
-        char line[1024];
-        fgets(line, 1024, stdin);
-        for (int j = 0; j < map_size_x; j++) {
-            map[i * map_size_x + j] = line[j];
-        }
+        char line[4096];
+        fgets(line, 4096, stdin);
+        memcpy(map + i * map_size_x, line, map_size_x);
     }
     map[size] = '\0';
 
@@ -391,18 +435,19 @@ char* parse_cities(vector<City>& cities, int map_size_x, int map_size_y) {
             struct City city;
             city.pos_y = i / map_size_x;
             city.pos_x = i - city.pos_y * map_size_x;
-                
+
             read_city_name(map, city.pos_x, city.pos_y, map_size_x, map_size_y, city.name);
 
             cities.push_back(city);
-            
+
         }
     }
 
     return map;
 }
 
-void show_map(char* map, int width, int height) {
+void show_map(char* map, int width, int height)
+{
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             putchar(map[i * width + j]);
@@ -411,7 +456,8 @@ void show_map(char* map, int width, int height) {
     }
 }
 
-void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& cities) {
+void create_nodes(char* map, int map_size_x, int map_size_y, vector<Node>& nodes, vector<City>& cities)
+{
 
     int i = 0;
     while (map[i]) {
@@ -427,17 +473,30 @@ void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& 
     // Search for neighbours and add them to the neighbours list
     for (auto& n1 : nodes) {
         struct Edge edge;
-        for (auto& n2 : nodes) {
-            if (n1.pos_x == n2.pos_x && n1.pos_y == n2.pos_y - 1 ||
-                n1.pos_x == n2.pos_x - 1 && n1.pos_y == n2.pos_y ||
-                n1.pos_x == n2.pos_x && n1.pos_y == n2.pos_y + 1 ||
-                n1.pos_x == n2.pos_x + 1 && n1.pos_y == n2.pos_y) 
-            {
-                edge.node = &n2; 
-                edge.cost = 1;
-                n1.neighbours.push_back(edge);
-            }
-        }
+        if (is_road_on_x_y(map, n1.pos_x + 1, n1.pos_y, map_size_x, map_size_y))
+            for (Node* n2 = &n1 + 1;; n2++)
+                if (n1.pos_x + 1 == n2->pos_x && n1.pos_y == n2->pos_y) {
+                    n1.neighbours.push_back({ n2, 1 });
+                    break;
+                }
+        if (is_road_on_x_y(map, n1.pos_x - 1, n1.pos_y, map_size_x, map_size_y))
+            for (Node* n2 = &n1 + 1;; n2--)
+                if (n1.pos_x - 1 == n2->pos_x && n1.pos_y == n2->pos_y) {
+                    n1.neighbours.push_back({ n2, 1 });
+                    break;
+                }
+        if (is_road_on_x_y(map, n1.pos_x, n1.pos_y + 1, map_size_x, map_size_y))
+            for (Node* n2 = &n1 + 1;; n2++)
+                if (n1.pos_x == n2->pos_x && n1.pos_y + 1 == n2->pos_y) {
+                    n1.neighbours.push_back({ n2, 1 });
+                    break;
+                }
+        if (is_road_on_x_y(map, n1.pos_x, n1.pos_y - 1, map_size_x, map_size_y))
+            for (Node* n2 = &n1 + 1;; n2--)
+                if (n1.pos_x == n2->pos_x && n1.pos_y - 1 == n2->pos_y) {
+                    n1.neighbours.push_back({ n2, 1 });
+                    break;
+                }
     }
 
     // Sort array of cities
@@ -475,18 +534,20 @@ void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& 
     }
 }
 
-void parse_input(vector<Node>& nodes, vector<City>& cities) {
+void parse_input(vector<Node>& nodes, vector<City>& cities)
+{
     int map_size_x;
     int map_size_y;
 
     scanf("%d %d\n", &map_size_x, &map_size_y);
 
     char* m = parse_cities(cities, map_size_x, map_size_y);
-    create_nodes(m, map_size_x, nodes, cities);
+    create_nodes(m, map_size_x, map_size_y, nodes, cities);
 
 }
 
-void parse_queries(vector<Node>& nodes, vector<City>& cities) {
+void parse_queries(vector<Node>& nodes, vector<City>& cities)
+{
     int num;
     scanf("%d\n", &num);
     for (int i = 0; i < num; i++) {
@@ -552,8 +613,9 @@ void parse_queries(vector<Node>& nodes, vector<City>& cities) {
     }
 }
 
-int main() {
-  
+int main()
+{
+
     vector<Node> nodes;
     vector<City> cities;
 
