@@ -183,9 +183,9 @@ struct Heap {
     }
 
     Node* pop() {
-        nodes.pop_back();
         swap_h_nodes(nodes.data[0], nodes.data[nodes.size - 1]);
         heapify(0, nodes.size - 1);
+        nodes.pop_back();
         return nodes.data[nodes.size].node;
     }
 
@@ -509,7 +509,4 @@ int main() {
     parse_input(nodes, cities);
     parse_queries(nodes, cities);
 
-    for (auto& c : cities) {
-        puts(c.name);
-    }
 }
