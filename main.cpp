@@ -294,6 +294,13 @@ void read_city_name(char* map, int pos, int map_width, int map_height, char* cit
         return;
     }
 
+    if (isalpha(map[pos + map_width]) && !isalpha(map[pos + map_width - 1]) && !isalpha(map[pos + map_width + 1])) {
+        // Nazwa jest jednoliterowa
+        city_name[0] = map[pos + map_width];
+        city_name[1] = '\0';
+        return;
+    }
+
     else if (isalpha(map[pos - map_width]) && isalpha(map[pos - map_width - 1])) {
         // zacznij wczytywaæ od pozycji: pos - map_width -> na lewo
         read_city_name_left(map, pos - map_width, city_name);
