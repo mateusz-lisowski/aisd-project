@@ -251,7 +251,10 @@ int binary_search(City* arr, int l, int r, char* x)
 }
 
 
-void read_city_name_right(char* map, int pos, char* city_name) {
+void read_city_name_right(char* map, int x, int y, int mx, char* city_name) {
+
+    int pos = y * mx + x;
+
     int i = 0;
     while (isalpha(map[pos])) {
         city_name[i] = map[pos];
@@ -262,7 +265,10 @@ void read_city_name_right(char* map, int pos, char* city_name) {
     city_name[i] = '\0';
 }
 
-void read_city_name_left(char* map, int pos, char* city_name) {
+void read_city_name_left(char* map, int x, int y, int mx, char* city_name) {
+    
+    int pos = y * mx + x;
+
     int i = 0;
     while (isalpha(map[pos])) {
         city_name[i] = map[pos];
@@ -278,95 +284,53 @@ void read_city_name_left(char* map, int pos, char* city_name) {
     city_name[i] = '\0';
 }
 
-void read_city_name(char* map, int pos, int map_width, int map_height, char* city_name) {
+bool is_alpha_on_x_y(char* map, int x, int y, int mx, int my) {
+    
+    if (x == -1 || y == -1 || x == mx || y == my) {
+        return false;
+    }
 
-    if (isalpha(map[pos - map_width]) && pos - map_width <= 0) {
-        // Nazwa jest jednoliterowa
-        city_name[0] = map[pos - map_width];
-        city_name[1] = '\0';
+    int pos = y * mx + x;
+
+    if (isalpha(map[pos])) {
+        return true;
+    }
+
+    return false;
+
+}
+
+void read_city_name(char* map, int x, int y, int map_width, int map_height, char* city_name) {
+
+    if (is_alpha_on_x_y(map, x - 1, y, map_width, map_height)) {
+        read_city_name_left(map, x - 1, y, map_width, city_name);
+        return;
+    }
+    
+    if (is_alpha_on_x_y(map, x + 1, y, map_width, map_height)) {
+        read_city_name_right(map, x + 1, y, map_width, city_name);
         return;
     }
 
-    if (isalpha(map[pos - map_width]) && !isalpha(map[pos - map_width - 1]) && !isalpha(map[pos - map_width + 1])) {
-        // Nazwa jest jednoliterowa
-        city_name[0] = map[pos - map_width];
-        city_name[1] = '\0';
+    if (is_alpha_on_x_y(map, x, y + 1, map_width, map_height)) {
+        
+        if (!is_alpha_on_x_y(map, x - 1, y - 1, map_width, map_height)) {
+            read_city_name_right(map, x, y - 1, map_width, city_name);
+            return;
+        }
+        if (!is_alpha_on_x_y(map, x + 1, y + 1, map_width, map_height)) {
+            read_city_name_left(map, x, y - 1, map_width, city_name);
+            return;
+        }
+        if (!is_alpha_on_x_y(map, x - 2, y - 1, map_width, map_height)) {
+            read_city_name_right(map, x - 1, y - 1, map_width, city_name);
+            return;
+        }
+
+        read_city_name_left(map, x + 1, y - 1, map_width, city_name);
         return;
     }
 
-    if (isalpha(map[pos + map_width]) && !isalpha(map[pos + map_width - 1]) && !isalpha(map[pos + map_width + 1])) {
-        // Nazwa jest jednoliterowa
-        city_name[0] = map[pos + map_width];
-        city_name[1] = '\0';
-        return;
-    }
-
-    else if (isalpha(map[pos - map_width]) && isalpha(map[pos - map_width - 1])) {
-        // zacznij wczytywaæ od pozycji: pos - map_width -> na lewo
-        read_city_name_left(map, pos - map_width, city_name);
-        return;
-    }
-
-    else if (isalpha(map[pos - map_width - 1])) {
-        // zacznij wczytywaæ od pozycji: pos - map_width - 1 -> na lewo
-        read_city_name_left(map, pos - map_width - 1, city_name);
-        return;
-    }
-
-    else if (isalpha(map[pos - 1])) {
-        // zacznij wczytywaæ od pozycji: pos - 1 -> na lewo
-        read_city_name_left(map, pos - 1, city_name);
-        return;
-    }
-
-    else if (isalpha(map[pos + map_width]) && isalpha(map[pos + map_width - 1])) {
-        // zacznij wczytywaæ od pozycji: pos + map_width -> na lewo
-        read_city_name_left(map, pos + map_width, city_name);
-        return;
-    }
-
-    else if (isalpha(map[pos + map_width - 1])) {
-        // zacznij wczytywaæ od pozycji: pos + map_width - 1 -> na lewo
-        read_city_name_left(map, pos + map_width - 1, city_name);
-        return;
-    }
-
-    else if (isalpha(map[pos - map_width]) && pos - map_width + 1 >= map_width * map_height) {
-        // Nazwa jest jednoliterowa
-        city_name[0] = map[pos - map_width];
-        city_name[1] = '\0';
-        return;
-    }
-
-    else if (isalpha(map[pos - map_width]) && isalpha(map[pos - map_width + 1])) {
-        // zacznij wczytywaæ od pozycji: pos - map_width -> na prawo
-        read_city_name_right(map, pos - map_width, city_name);
-        return;
-    }
-
-    else if (isalpha(map[pos - map_width + 1])) {
-        // zacznij wczytywaæ od pozycji: pos - map_width + 1 -> na prawo
-        read_city_name_right(map, pos - map_width + 1, city_name);
-        return;
-    }
-
-    else if (isalpha(map[pos + 1])) {
-        // zacznij wczytywaæ od pozycji: pos + 1 -> na prawo
-        read_city_name_right(map, pos + 1, city_name);
-        return;
-    }
-
-    else if (isalpha(map[pos + map_width]) && isalpha(map[pos + map_width + 1])) {
-        // zacznij wczytywaæ od pozycji: pos + map_width -> na prawo
-        read_city_name_right(map, pos + map_width, city_name);
-        return;
-    }
-
-    else if (isalpha(map[pos + map_width + 1])) {
-        // zacznij wczytywaæ od pozycji: pos + map_width + 1 -> na prawo
-        read_city_name_right(map, pos + map_width + 1, city_name);
-        return;
-    }
 }
 
 char* parse_cities(vector<City>& cities, int map_size_x, int map_size_y) {
@@ -390,7 +354,7 @@ char* parse_cities(vector<City>& cities, int map_size_x, int map_size_y) {
             city.pos_y = i / map_size_x;
             city.pos_x = i - city.pos_y * map_size_x;
                 
-            read_city_name(map, i, map_size_x, map_size_y, city.name);
+            read_city_name(map, city.pos_x, city.pos_y, map_size_x, map_size_y, city.name);
 
             cities.push_back(city);
             
