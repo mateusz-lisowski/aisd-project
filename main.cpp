@@ -144,11 +144,11 @@ struct Heap {
         int left = 2 * i + 1;
         int right = 2 * i + 2;
 
-        if (left < n && nodes.data[left].cost > nodes.data[largest].cost) {
+        if (left < n && nodes.data[left].cost < nodes.data[largest].cost) {
             largest = left;
         }          
 
-        if (right < n && nodes.data[right].cost > nodes.data[largest].cost) {
+        if (right < n && nodes.data[right].cost < nodes.data[largest].cost) {
             largest = right;
         }
 
@@ -167,7 +167,7 @@ struct Heap {
             return;
         }
 
-        if (nodes.data[last].cost > nodes.data[parent].cost) {
+        if (nodes.data[last].cost < nodes.data[parent].cost) {
             swap_h_nodes(nodes.data[last], nodes.data[parent]);
             bubble_last_up(parent);
         }
@@ -292,7 +292,7 @@ bool is_alpha_on_x_y(char* map, int x, int y, int mx, int my) {
 
     int pos = y * mx + x;
 
-    if (isalpha(map[pos])) {
+    if (map[pos] != NULL && map[pos] != '*' && map[pos] != '#' && map[pos] != '.') {
         return true;
     }
 
@@ -467,8 +467,8 @@ void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& 
         fgets(line, 1024, stdin);
         sscanf(line, "%s %s %d", from_city, to_city, &cost);
 
-        int from_city_index = binary_search(cities.data, 0, cities.size - 1, from_city);
-        int to_city_index = binary_search(cities.data, 0, cities.size - 1, to_city);
+        int from_city_index = binary_search(cities.data, 0, cities.size - 1, to_city);
+        int to_city_index = binary_search(cities.data, 0, cities.size - 1, from_city);
 
         cities.data[from_city_index].node->neighbours.push_back({ cities.data[to_city_index].node, cost });
 
@@ -529,8 +529,8 @@ void parse_queries(vector<Node>& nodes, vector<City>& cities) {
             }
         }
 
-        Node* n = cities.data[from_city_index].node->from;
-        
+        Node* n = cities.data[to_city_index].node;
+
         if (type == 0) {
             printf("%d\n", n->cost);
         }
@@ -538,7 +538,8 @@ void parse_queries(vector<Node>& nodes, vector<City>& cities) {
         if (type == 1) {
 
             printf("%d", n->cost);
-            Node* dst = cities.data[to_city_index].node;
+            Node* dst = cities.data[from_city_index].node;
+            n = n->from;
             while (n != dst) {
                 if (n->city != nullptr) {
                     printf(" %s", n->city->name);
