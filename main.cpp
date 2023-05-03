@@ -363,8 +363,8 @@ void create_nodes(char* map, int map_size_x, vector<Node>& nodes, vector<City>& 
     while (map[i]) {
         if (map[i] == '#' || map[i] == '*') {
             struct Node node;
-            node.pos_x = i / map_size_x;
-            node.pos_y = i - node.pos_y * map_size_x;
+            node.pos_y = i / map_size_x;
+            node.pos_x = i - node.pos_y * map_size_x;
             nodes.push_back(std::move(node));
         }
         i++;
