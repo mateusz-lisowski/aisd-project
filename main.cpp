@@ -200,7 +200,7 @@ void swap(City& c1, City& c2) {
     memcpy(c2.name, tmp, 100);
 
     int tmp_x = c1.pos_x;
-    int tmp_y = c1.pos_x;
+    int tmp_y = c1.pos_y;
     
     c1.pos_x = c2.pos_x;
     c1.pos_y = c2.pos_y;
@@ -278,68 +278,87 @@ void read_city_name_left(char* map, int pos, char* city_name) {
     city_name[i] = '\0';
 }
 
-void read_city_name(char* map, int pos, int map_width, char* city_name) {
+void read_city_name(char* map, int pos, int map_width, int map_height, char* city_name) {
 
     if (isalpha(map[pos - map_width]) && pos - map_width <= 0) {
         // Nazwa jest jednoliterowa
         city_name[0] = map[pos - map_width];
         city_name[1] = '\0';
+        return;
+    }
+
+    if (isalpha(map[pos - map_width]) && !isalpha(map[pos - map_width - 1]) && !isalpha(map[pos - map_width + 1])) {
+        // Nazwa jest jednoliterowa
+        city_name[0] = map[pos - map_width];
+        city_name[1] = '\0';
+        return;
     }
 
     else if (isalpha(map[pos - map_width]) && isalpha(map[pos - map_width - 1])) {
         // zacznij wczytywaæ od pozycji: pos - map_width -> na lewo
         read_city_name_left(map, pos - map_width, city_name);
+        return;
     }
 
     else if (isalpha(map[pos - map_width - 1])) {
         // zacznij wczytywaæ od pozycji: pos - map_width - 1 -> na lewo
         read_city_name_left(map, pos - map_width - 1, city_name);
+        return;
     }
 
     else if (isalpha(map[pos - 1])) {
         // zacznij wczytywaæ od pozycji: pos - 1 -> na lewo
         read_city_name_left(map, pos - 1, city_name);
+        return;
     }
 
     else if (isalpha(map[pos + map_width]) && isalpha(map[pos + map_width - 1])) {
         // zacznij wczytywaæ od pozycji: pos + map_width -> na lewo
         read_city_name_left(map, pos + map_width, city_name);
+        return;
     }
 
     else if (isalpha(map[pos + map_width - 1])) {
         // zacznij wczytywaæ od pozycji: pos + map_width - 1 -> na lewo
         read_city_name_left(map, pos + map_width - 1, city_name);
+        return;
     }
 
-    else if (isalpha(map[pos - map_width]) && pos - map_width + 1 >= sizeof(map) / sizeof(char)) {
+    else if (isalpha(map[pos - map_width]) && pos - map_width + 1 >= map_width * map_height) {
         // Nazwa jest jednoliterowa
         city_name[0] = map[pos - map_width];
         city_name[1] = '\0';
+        return;
     }
 
     else if (isalpha(map[pos - map_width]) && isalpha(map[pos - map_width + 1])) {
         // zacznij wczytywaæ od pozycji: pos - map_width -> na prawo
         read_city_name_right(map, pos - map_width, city_name);
+        return;
     }
 
     else if (isalpha(map[pos - map_width + 1])) {
         // zacznij wczytywaæ od pozycji: pos - map_width + 1 -> na prawo
         read_city_name_right(map, pos - map_width + 1, city_name);
+        return;
     }
 
     else if (isalpha(map[pos + 1])) {
         // zacznij wczytywaæ od pozycji: pos + 1 -> na prawo
         read_city_name_right(map, pos + 1, city_name);
+        return;
     }
 
     else if (isalpha(map[pos + map_width]) && isalpha(map[pos + map_width + 1])) {
         // zacznij wczytywaæ od pozycji: pos + map_width -> na prawo
         read_city_name_right(map, pos + map_width, city_name);
+        return;
     }
 
     else if (isalpha(map[pos + map_width + 1])) {
         // zacznij wczytywaæ od pozycji: pos + map_width + 1 -> na prawo
         read_city_name_right(map, pos + map_width + 1, city_name);
+        return;
     }
 }
 
@@ -364,7 +383,7 @@ char* parse_cities(vector<City>& cities, int map_size_x, int map_size_y) {
             city.pos_y = i / map_size_x;
             city.pos_x = i - city.pos_y * map_size_x;
                 
-            read_city_name(map, i, map_size_x, city.name);
+            read_city_name(map, i, map_size_x, map_size_y, city.name);
 
             cities.push_back(city);
             
@@ -489,7 +508,7 @@ void parse_queries(vector<Node>& nodes, vector<City>& cities) {
             if (!node->traversed) {
                 node->traversed = true;
                 if (node == cities.data[to_city_index].node)
-                    return;
+                    break;
                 for (auto& edge : node->neighbours) {
                     int new_cost = node->cost + edge.cost;
                     if (new_cost < edge.node->cost) {
@@ -529,10 +548,10 @@ int main() {
     vector<City> cities;
 
     parse_input(nodes, cities);
-    parse_queries(nodes, cities);
+    //parse_queries(nodes, cities);
 
     for (auto& c : cities) {
-        printf("City{%s, %d, %d}", c.name, c.pos_x, c.pos_y);
+        printf("City{%s, %d, %d}\n", c.name, c.pos_x, c.pos_y);
     }
 
 }
