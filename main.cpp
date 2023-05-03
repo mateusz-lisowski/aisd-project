@@ -154,14 +154,14 @@ struct Heap {
 
         if (largest != i) {
             swap_h_nodes(nodes.data[i], nodes.data[largest]);
-            heapify(n, largest);
+            heapify(largest, n);
         }
     }
 
     void bubble_last_up(int i) {
         
         int last = i;
-        int parent = i / 2;
+        int parent = (i - 1) / 2;
 
         if (i == 0) {
             return;
@@ -540,7 +540,7 @@ void parse_queries(vector<Node>& nodes, vector<City>& cities) {
             printf("%d", n->cost);
             Node* dst = cities.data[from_city_index].node;
             n = n->from;
-            while (n != dst) {
+            while (n != nullptr && n != dst) {
                 if (n->city != nullptr) {
                     printf(" %s", n->city->name);
                 }
@@ -558,10 +558,6 @@ int main() {
     vector<City> cities;
 
     parse_input(nodes, cities);
-    //parse_queries(nodes, cities);
-
-    for (auto& c : cities) {
-        printf("City{%s, %d, %d}\n", c.name, c.pos_x, c.pos_y);
-    }
+    parse_queries(nodes, cities);
 
 }
