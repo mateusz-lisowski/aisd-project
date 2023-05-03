@@ -312,13 +312,13 @@ void read_city_name(char* map, int x, int y, int map_width, int map_height, char
         return;
     }
 
-    if (is_alpha_on_x_y(map, x, y + 1, map_width, map_height)) {
+    if (is_alpha_on_x_y(map, x, y - 1, map_width, map_height)) {
         
         if (!is_alpha_on_x_y(map, x - 1, y - 1, map_width, map_height)) {
             read_city_name_right(map, x, y - 1, map_width, city_name);
             return;
         }
-        if (!is_alpha_on_x_y(map, x + 1, y + 1, map_width, map_height)) {
+        if (!is_alpha_on_x_y(map, x + 1, y - 1, map_width, map_height)) {
             read_city_name_left(map, x, y - 1, map_width, city_name);
             return;
         }
@@ -331,6 +331,44 @@ void read_city_name(char* map, int x, int y, int map_width, int map_height, char
         return;
     }
 
+    if (is_alpha_on_x_y(map, x, y + 1, map_width, map_height)) {
+
+        if (!is_alpha_on_x_y(map, x - 1, y + 1, map_width, map_height)) {
+            read_city_name_right(map, x, y + 1, map_width, city_name);
+            return;
+        }
+        if (!is_alpha_on_x_y(map, x + 1, y + 1, map_width, map_height)) {
+            read_city_name_left(map, x, y + 1, map_width, city_name);
+            return;
+        }
+        if (!is_alpha_on_x_y(map, x - 2, y + 1, map_width, map_height)) {
+            read_city_name_right(map, x - 1, y + 1, map_width, city_name);
+            return;
+        }
+
+        read_city_name_left(map, x + 1, y + 1, map_width, city_name);
+        return;
+    }
+
+    if (is_alpha_on_x_y(map, x - 1, y - 1, map_width, map_height)) {
+        read_city_name_left(map, x - 1, y - 1, map_width, city_name);
+        return;
+    }
+
+    if (is_alpha_on_x_y(map, x + 1, y - 1, map_width, map_height)) {
+        read_city_name_right(map, x + 1, y - 1, map_width, city_name);
+        return;
+    }
+
+    if (is_alpha_on_x_y(map, x - 1, y + 1, map_width, map_height)) {
+        read_city_name_left(map, x - 1, y + 1, map_width, city_name);
+        return;
+    }
+
+    if (is_alpha_on_x_y(map, x + 1, y + 1, map_width, map_height)) {
+        read_city_name_right(map, x + 1, y + 1, map_width, city_name);
+        return;
+    }
 }
 
 char* parse_cities(vector<City>& cities, int map_size_x, int map_size_y) {
