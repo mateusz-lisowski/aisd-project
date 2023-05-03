@@ -437,6 +437,12 @@ void parse_queries(vector<Node>& nodes, vector<City>& cities) {
     scanf("%d\n", &num);
     for (int i = 0; i < num; i++) {
 
+        for (auto& node : nodes) {
+            node.cost = 0x7FFFFFFF;
+            node.from = nullptr;
+            node.traversed = false;
+        }
+
         char from_city[100];
         char to_city[100];
         int type;
@@ -445,8 +451,8 @@ void parse_queries(vector<Node>& nodes, vector<City>& cities) {
         fgets(line, 1024, stdin);
         sscanf(line, "%s %s %d", from_city, to_city, &type);
 
-        int from_city_index = binary_search(cities.data, 0, cities.size - 1, from_city);
-        int to_city_index = binary_search(cities.data, 0, cities.size - 1, to_city);
+        int from_city_index = binary_search(cities.data, 0, cities.size - 1, to_city);
+        int to_city_index = binary_search(cities.data, 0, cities.size - 1, from_city);
 
         Heap heap;
         HeapNode node;
@@ -460,9 +466,6 @@ void parse_queries(vector<Node>& nodes, vector<City>& cities) {
                 if (node == cities.data[to_city_index].node)
                     return;
                 for (auto& edge : node->neighbours) {
-                    node->cost = 0x7FFFFFFF;
-                    node->from = nullptr;
-                    node->traversed = false;
                     int new_cost = node->cost + edge.cost;
                     if (new_cost < edge.node->cost) {
                         edge.node->cost = new_cost;
@@ -474,18 +477,21 @@ void parse_queries(vector<Node>& nodes, vector<City>& cities) {
         }
 
         if (type == 0) {
-            printf("%d", node.cost);
+            printf("%d\n", node.cost);
         }
 
         if (type == 1) {
+
             printf("%d", node.cost);
-            Node* n = cities.data[to_city_index].node->from;
-            while (n != nullptr)
-            {
+            Node* n = cities.data[from_city_index].node->from;
+            Node* dst = cities.data[to_city_index].node;
+            while (n != dst) {
                 if (n->city != nullptr) {
                     printf(" %s", n->city->name);
                 }
+                n = n->from;
             }
+            printf("\n");
         }
 
     }
